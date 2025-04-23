@@ -1,63 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebGIS của Thuỳ Linh</title>
+  <title>Bản đồ hồ Bảo Linh</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-  <style>
-    #map {
-      height: 100vh;
-      width: 100%;
-    }
-  </style>
+  <style>#map { height: 100vh; }</style>
 </head>
 <body>
+  <div id="map"></div>
 
-<h3 style="text-align:center;">WebGIS của Thuỳ Linh.js</h3>
-<div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    var map = L.map('map').setView([21.0, 105.0], 10); // tuỳ chỉnh vị trí
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-<script>
-  // Khởi tạo bản đồ và đặt vị trí trung tâm (tọa độ Việt Nam)
-  var map = L.map('map').setView([14.0583, 108.2772], 6);
-
-  // Thêm lớp nền từ OpenStreetMap
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
-
-  // Thêm 1 marker (ví dụ tại Hà Nội)
-  var marker = L.marker([21.0285, 105.8544]).addTo(map);
-  marker.bindPopup("<b>Hà Nội</b><br>Thủ đô của Việt Nam").openPopup();
-</script>
-
-</body>
-</html>
-  // Load file GeoJSON tại chỗ
-    fetch('hobaolinh.geojson')
+    fetch('https://raw.githubusercontent.com/[tlinh168]/[hobaolinh]/main/data/ho_bao_linh.geojson')
       .then(res => res.json())
       .then(data => {
-        var geoLayer = L.geoJSON(data, {
-          style: {
-            color: 'blue',
-            weight: 1.5,
-            fillColor: 'cyan',
-            fillOpacity: 0.4
-          },
-          onEachFeature: function (feature, layer) {
-            const name = feature.properties.VARNAME_3 || 'No name';
-            layer.bindPopup(`<b>${name}</b>`);
-          }
-        }).addTo(map);
-
-        map.fitBounds(geoLayer.getBounds());
+        L.geoJSON(data).addTo(map);
       });
   </script>
 </body>
