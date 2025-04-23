@@ -40,3 +40,25 @@
 
 </body>
 </html>
+  // Load file GeoJSON tại chỗ
+    fetch('hobaolinh.geojson')
+      .then(res => res.json())
+      .then(data => {
+        var geoLayer = L.geoJSON(data, {
+          style: {
+            color: 'blue',
+            weight: 1.5,
+            fillColor: 'cyan',
+            fillOpacity: 0.4
+          },
+          onEachFeature: function (feature, layer) {
+            const name = feature.properties.VARNAME_3 || 'No name';
+            layer.bindPopup(`<b>${name}</b>`);
+          }
+        }).addTo(map);
+
+        map.fitBounds(geoLayer.getBounds());
+      });
+  </script>
+</body>
+</html>
