@@ -1,42 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <title>WebGIS của Linh</title>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebGIS với Lớp Nền Tùy Chọn và Tìm kiếm</title>
 
-  <!-- Leaflet CSS -->
+  <!-- Thêm CSS cho Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-search/dist/leaflet-search.min.css" />
 
   <style>
+    /* Cài đặt kích thước cho bản đồ */
     #map {
-      height: 100vh;
       width: 100%;
+      height: 100vh;
+    }
+
+    /* Cài đặt giao diện tìm kiếm */
+    .leaflet-search {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: #fff;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    /* Cài đặt các button lớp nền */
+    .leaflet-control-layers label {
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
-<h3 style="text-align:center;">WebGIS của Linh.js</h3>
-<div id="map"></div>
+  <!-- Phần tử chứa bản đồ -->
+  <div id="map"></div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Thêm JavaScript của Leaflet và Plugin tìm kiếm -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-search/dist/leaflet-search.min.js"></script>
 
-<script>
-  // Khởi tạo bản đồ và đặt vị trí trung tâm (tọa độ Việt Nam)
-  var map = L.map('map').setView([14.0583, 108.2772], 6);
+  <script>
+    // Khởi tạo bản đồ
+    const map = L.map('map').setView([16.047079, 108.206230], 6); // Trung tâm Việt Nam
 
-  // Thêm lớp nền từ OpenStreetMap
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
+    // Lớp nền OpenStreetMap mặc định
+    const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    });
 
-  // Thêm 1 marker (ví dụ tại Hà Nội)
-  var marker = L.marker([21.11093283528139, 105.70847410650083]).addTo(map);
-  marker.bindPopup("<b>Liên Hà</b><be> Nhà của Thuy Linh").openPopup();
-</script>
+    // Các lớp nền khác (ví dụ: CartoDB, Stamen)
+    const cartoDBLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+      attribution: '&copy; CartoDB'
+    });
 
+    const stamenLayer = L.tileLayer('https://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+      attribution: '&copy; Stamen'
+    });
+
+    // Lớp nền mặc định
+    osmLayer.addTo(map);
+
+    // Cung cấp các tùy chọn lớp nền
+    const baseLayers = {
+      "OpenStreetMap": osmLayer,
+      "CartoDB": cartoDBLayer,
+      "Stamen Toner": stamenLayer
+    };
+
+    // Dữ liệu các địa điểm (địa chỉ và toạ độ)
+    const locations = [
+      { title: "Hà Nội", coords: [21.0285, 105.8542] },
+      { title: "TP. Hồ Chí Minh", coords: [10.7769, 106.7009] },
+      { title: "Đà Nẵng", coords: [16.0471, 108.2062] },
+      { title: "Huế", coords: [16.4637, 107.5909] },
+      { title: "Cần Thơ", coords: [10.0452, 105.7469] }
+    ];
+
+    // Nhóm marker để phục vụ tìm kiếm
+    const markersLayer = new L.LayerGroup();
+    map.addLayer(markersLayer);
+
+    // Tạo các marker từ dữ liệu
+    locations.forEach(place => {
+      const marker = L.marker(place.coords, { title: place.title });
+      marker.bindPopup(`<strong>${place.title}</strong>`);
+      markersLayer.addLayer(marker);
+    });
+
+    // Thêm control tìm kiếm vào bản đồ
+    const searchControl = new L.Control.Search({
+      layer: markersLayer,
+      propertyName: 'title',  // Tìm kiếm theo tên địa điểm
+      marker: false,  // Không hiển thị lại marker khi tìm
+      moveToLocation: function (latlng, title, map) {
+        map.setView(latlng, 10); // Tập trung vào vị trí và zoom
+      }
+    });
+
+    // Tự động mở popup khi tìm được kết quả
+    searchControl.on('search:locationfound', function(e) {
+      e.layer.openPopup();
+    });
+
+    // Thêm control tìm kiếm vào bản đồ
+    map.addControl(searchControl);
+
+    // Thêm menu chọn lớp nền
+    L.control.layers(baseLayers).addTo(map);
+
+  </script>
 </body>
 </html>
