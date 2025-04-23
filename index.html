@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebGIS cơ bản với Leaflet</title>
+  <title>WebGIS của tlinh</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  
+  <!-- Tải thư viện Leaflet Control Geocoder từ CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
   <style>
     #map {
@@ -17,7 +21,7 @@
 </head>
 <body>
 
-<h3 style="text-align:center;">WebGIS của Linh</h3>
+<h3 style="text-align:center;">WebGIS của tlinh</h3>
 <div id="map"></div>
 
 <!-- Leaflet JS -->
@@ -33,17 +37,13 @@
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
+  // Thêm chức năng tìm kiếm (Geocoder)
+  L.Control.geocoder().addTo(map);
+
   // Thêm 1 marker (ví dụ tại Hà Nội)
   var marker = L.marker([21.0285, 105.8544]).addTo(map);
   marker.bindPopup("<b>Hà Nội</b><br>Thủ đô của Việt Nam").openPopup();
 </script>
 
-</body>
-</html>
-// Thêm chức năng tìm kiếm với Leaflet Control Geocoder
-        L.Control.geocoder().addTo(map);
-
-   
-    </script>
 </body>
 </html>
