@@ -1,117 +1,50 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebGIS với Lớp Nền Tùy Chọn và Tìm kiếm</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS với OpenStreetMap và Tìm kiếm</title>
+    <!-- Tải thư viện Leaflet từ CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-  <!-- Thêm CSS cho Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-search/dist/leaflet-search.min.css" />
+    <!-- Tải thư viện Leaflet Control Geocoder từ CDN (tìm kiếm địa điểm) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-  <style>
-    /* Cài đặt kích thước cho bản đồ */
-    #map {
-      width: 100%;
-      height: 100vh;
-    }
-
-    /* Cài đặt giao diện tìm kiếm */
-    .leaflet-search {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 1000;
-      background: #fff;
-      padding: 5px;
-      border-radius: 5px;
-      width: 250px;
-    }
-
-    /* Cài đặt các button lớp nền */
-    .leaflet-control-layers label {
-      font-size: 14px;
-    }
-  </style>
+    <style>
+        /* Đặt kích thước cho bản đồ */
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
+    <h1>WebGIS: OpenStreetMap với Tìm kiếm Địa điểm</h1>
+    <div id="map"></div>
 
-  <!-- Phần tử chứa bản đồ -->
-  <div id="map"></div>
+    <script>
+        // Khởi tạo bản đồ và gán tọa độ ban đầu (Hà Nội, Việt Nam)
+        var map = L.map('map').setView([21.0285, 105.8542], 13); // Hà Nội, Việt Nam
 
-  <!-- Thêm JavaScript của Leaflet và Plugin tìm kiếm -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-control-search/dist/leaflet-search.min.js"></script>
+        // Thêm lớp bản đồ OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-  <script>
-    // Khởi tạo bản đồ
-    const map = L.map('map').setView([16.047079, 108.206230], 6); // Trung tâm Việt Nam
+        // Thêm chức năng tìm kiếm với Leaflet Control Geocoder
+        L.Control.geocoder().addTo(map);
 
-    // Lớp nền OpenStreetMap mặc định
-    const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    });
+        // Thêm một marker vào bản đồ tại vị trí Hà Nội
+        L.marker([21.0285, 105.8542]).addTo(map)
+            .bindPopup('<b>Hà Nội</b><br>Thủ đô của Việt Nam')
+            .openPopup();
 
-    // Các lớp nền khác (ví dụ: CartoDB, Stamen)
-    const cartoDBLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-      attribution: '&copy; CartoDB'
-    });
-
-    const stamenLayer = L.tileLayer('https://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
-      attribution: '&copy; Stamen'
-    });
-
-    // Lớp nền mặc định
-    osmLayer.addTo(map);
-
-    // Cung cấp các tùy chọn lớp nền
-    const baseLayers = {
-      "OpenStreetMap": osmLayer,
-      "CartoDB": cartoDBLayer,
-      "Stamen Toner": stamenLayer
-    };
-
-    // Dữ liệu các địa điểm (địa chỉ và toạ độ)
-    const locations = [
-      { title: "Hà Nội", coords: [21.0285, 105.8542] },
-      { title: "TP. Hồ Chí Minh", coords: [10.7769, 106.7009] },
-      { title: "Đà Nẵng", coords: [16.0471, 108.2062] },
-      { title: "Huế", coords: [16.4637, 107.5909] },
-      { title: "Cần Thơ", coords: [10.0452, 105.7469] }
-    ];
-
-    // Nhóm marker để phục vụ tìm kiếm
-    const markersLayer = new L.LayerGroup();
-    map.addLayer(markersLayer);
-
-    // Tạo các marker từ dữ liệu
-    locations.forEach(place => {
-      const marker = L.marker(place.coords, { title: place.title });
-      marker.bindPopup(`<strong>${place.title}</strong>`);
-      markersLayer.addLayer(marker);
-    });
-
-    // Thêm control tìm kiếm vào bản đồ
-    const searchControl = new L.Control.Search({
-      layer: markersLayer,
-      propertyName: 'title',  // Tìm kiếm theo tên địa điểm
-      marker: false,  // Không hiển thị lại marker khi tìm
-      moveToLocation: function (latlng, title, map) {
-        map.setView(latlng, 10); // Tập trung vào vị trí và zoom
-      }
-    });
-
-    // Tự động mở popup khi tìm được kết quả
-    searchControl.on('search:locationfound', function(e) {
-      e.layer.openPopup();
-    });
-
-    // Thêm control tìm kiếm vào bản đồ
-    map.addControl(searchControl);
-
-    // Thêm menu chọn lớp nền
-    L.control.layers(baseLayers).addTo(map);
-
-  </script>
+        // Thêm một marker khác tại Hồ Gươm
+        L.marker([21.0280, 105.8540]).addTo(map)
+            .bindPopup('<b>Hồ Gươm</b><br>Nơi lịch sử và văn hóa.')
+            .openPopup();
+    </script>
 </body>
 </html>
