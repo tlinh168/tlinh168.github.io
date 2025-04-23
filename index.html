@@ -40,4 +40,37 @@
 
 </body>
 </html>
+<!-- Thêm CSS + JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-search/dist/leaflet-search.min.css">
+<script src="https://unpkg.com/leaflet-control-search/dist/leaflet-search.min.js"></script>
+
+<script>
+  const map = L.map('map').setView([16, 108], 6); // ví dụ: Đà Nẵng
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+  // Ví dụ: các điểm GeoJSON
+  const data = [
+    { title: "Hà Nội", lat: 21.0285, lng: 105.8542 },
+    { title: "TP.HCM", lat: 10.762622, lng: 106.660172 }
+  ];
+
+  const markersLayer = new L.LayerGroup().addTo(map);
+  data.forEach(place => {
+    const marker = L.marker([place.lat, place.lng], { title: place.title });
+    marker.bindPopup(place.title);
+    markersLayer.addLayer(marker);
+  });
+
+  // Thêm control tìm kiếm
+  const searchControl = new L.Control.Search({
+    layer: markersLayer,
+    propertyName: 'title',
+    marker: false,
+    moveToLocation: (latlng, title, map) => {
+      map.setView(latlng, 10); // zoom vào điểm tìm thấy
+    }
+  });
+
+  map.addControl(searchControl);
+</script>
 
