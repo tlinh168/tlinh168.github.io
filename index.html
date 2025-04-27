@@ -1,79 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebGIS tlinh</title>
   <meta charset="utf-8" />
+  <title>Simple WebGIS - Hobaoling</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    #map {
-      height: 100vh;
-      width: 100%;
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+      padding: 0;
     }
   </style>
 </head>
 <body>
+  <div id="map"></div>
 
-<h3 style="text-align:center;">WebGIS của tlinh</h3>
-<div id="map"></div>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script>
+    // Tạo bản đồ nền
+    var map = L.map('map').setView([16.5, 107.5], 7);
 
-<script>
-  // Khởi tạo bản đồ
-  var map = L.map('map').setView([14.0583, 108.2772], 6);
-
-  // Các layer nền
-  var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0','mt1','mt2','mt3'],
-    attribution: '© Google Maps'
-  });
-
-  var googleSatellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0','mt1','mt2','mt3'],
-    attribution: '© Google Satellite'
-  });
-
-  var googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0','mt1','mt2','mt3'],
-    attribution: '© Google Terrain'
-  });
-
-  var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors'
-  });
-
-  // Thêm mặc định là Google Hybrid
-  googleHybrid.addTo(map);
-
-  // Thêm Marker ví dụ
-  var marker = L.marker([20.9884, 105.7958]).addTo(map);
-  marker.bindPopup("<b>Hà Nội</b><br>Hanoi university").openPopup();
-
-  // Tìm kiếm địa điểm
-  L.Control.geocoder({
-    defaultMarkGeocode: true
-  }).addTo(map);
-
-  // Tạo control chuyển đổi layer nền
-  var baseMaps = {
-    "🛰️ Google Hybrid": googleHybrid,
-    "🌍 OpenStreetMap": osm,
-    "🗺️ Google Satellite": googleSatellite,
-    "⛰️ Google Terrain": googleTerrain
-  };
-
-  L.control.layers(baseMaps).addTo(map);
+    // Lớp nền OSM
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
   // ==============================
   // THÊM PHẦN NÀY: Load file GeoJSON Ho Bao Linh
