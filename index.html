@@ -31,36 +31,25 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-  // ==============================
-  // THÊM PHẦN NÀY: Load file GeoJSON Ho Bao Linh
-  // ==============================
-  fetch('hobaolinh_geojson.geojson')
-  .then(response => response.json())
-  .then(data => {
-    var hobaolinhLayer = L.geoJSON(data, {
-      style: {
-        color: 'red',
-        weight: 2,
-        fillOpacity: 0.5
-      },
-      onEachFeature: function (feature, layer) {
-        if (feature.properties) {
-          let popupContent = "";
-          for (const key in feature.properties) {
-            popupContent += `<b>${key}</b>: ${feature.properties[key]}<br>`;
+    // Load file GeoJSON tại chỗ
+    fetch('hobaolinh.geojson')
+      .then(res => res.json())
+      .then(data => {
+        var geoLayer = L.geoJSON(data, {
+          style: {
+            color: 'blue',
+            weight: 1.5,
+            fillColor: 'cyan',
+            fillOpacity: 0.4
+          },
+          onEachFeature: function (feature, layer) {
+            const name = feature.properties.VARNAME_3 || 'No name';
+            layer.bindPopup(`<b>${name}</b>`);
           }
-          layer.bindPopup(popupContent);
-        }
-      }
-    }).addTo(map);
+        }).addTo(map);
 
-    // Zoom tới vùng dữ liệu
-    map.fitBounds(hobaolinhLayer.getBounds());
-  })
-  .catch(error => {
-    console.error('Lỗi khi tải file GeoJSON:', error);
-  });
-</script>
-
+        map.fitBounds(geoLayer.getBounds());
+      });
+  </script>
 </body>
 </html>
