@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<h3 style="text-align:center;">WebGIS cua tlinh</h3>
+<h3 style="text-align:center;">WebGIS của tlinh</h3>
 <div id="map"></div>
 
 <!-- Leaflet JS -->
@@ -65,7 +65,7 @@
     defaultMarkGeocode: true
   }).addTo(map);
 
-  // Tạo control chuyển đổi layer nền
+  // Control chuyển đổi layer nền
   var baseMaps = {
     "🛰️ Google Hybrid": googleHybrid,
     "🌍 OpenStreetMap": osm,
@@ -74,29 +74,36 @@
   };
 
   L.control.layers(baseMaps).addTo(map);
-  // Tải file GeoJSON
-  fetch('hobaolinh.geojson')
-    .then(res => res.json())
+
+  // ==============================
+  // Load file GeoJSON Ho Bao Linh
+  // ==============================
+  fetch('hobaolinh_geojson.geojson')
+    .then(response => response.json())
     .then(data => {
-      L.geoJSON(data, {
+      var geojsonLayer = L.geoJSON(data, {
         style: {
           color: 'blue',
-          weight: 2,
-          fillColor: 'lightblue',
-          fillOpacity: 0.4
+          weight: 2
         },
         onEachFeature: function (feature, layer) {
           if (feature.properties) {
             let popupContent = "";
             for (const key in feature.properties) {
-              popupContent += `<strong>${key}:</strong> ${feature.properties[key]}<br>`;
+              popupContent += `<b>${key}</b>: ${feature.properties[key]}<br>`;
             }
             layer.bindPopup(popupContent);
           }
         }
       }).addTo(map);
+
+      // Fit bản đồ vào vùng dữ liệu
+      map.fitBounds(geojsonLayer.getBounds());
     })
-    .catch(err => console.error('Lỗi tải GeoJSON:', err));
+    .catch(error => {
+      console.error('Error loading the GeoJSON:', error);
+    });
+
 </script>
 
 </body>
