@@ -74,6 +74,40 @@
   };
 
   L.control.layers(baseMaps).addTo(map);
+// Load file GeoJSON Ho Bao Linh
+fetch('hobaolinh.geojson')
+  .then(response => response.json())
+  .then(data => {
+    var hobaolinhLayer = L.geoJSON(data, {
+      pointToLayer: function (feature, latlng) {
+        return L.polygon([
+          [latlng.lat + 0.001, latlng.lng + 0.001],
+          [latlng.lat + 0.001, latlng.lng - 0.001],
+          [latlng.lat - 0.001, latlng.lng - 0.001],
+          [latlng.lat - 0.001, latlng.lng + 0.001]
+        ], {
+          color: 'blue',
+          weight: 2,
+          fillOpacity: 0.5
+        });
+      },
+      onEachFeature: function (feature, layer) {
+        if (feature.properties) {
+          let popupContent = "";
+          for (const key in feature.properties) {
+            popupContent += `<b>${key}</b>: ${feature.properties[key]}<br>`;
+          }
+          layer.bindPopup(popupContent);
+        }
+      }
+    }).addTo(map);
+
+    // Zoom tới vùng polygon
+    map.fitBounds(hobaolinhLayer.getBounds());
+  })
+  .catch(error => {
+    console.error('Lỗi khi tải GeoJSON:', error);
+  });
 
 </script>
 
