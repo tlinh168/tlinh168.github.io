@@ -65,7 +65,7 @@
     defaultMarkGeocode: true
   }).addTo(map);
 
-  // Control chuyển đổi layer nền
+  // Tạo control chuyển đổi layer nền
   var baseMaps = {
     "🛰️ Google Hybrid": googleHybrid,
     "🌍 OpenStreetMap": osm,
@@ -76,12 +76,12 @@
   L.control.layers(baseMaps).addTo(map);
 
   // ==============================
-  // Load file GeoJSON Ho Bao Linh
+  // THÊM PHẦN NÀY: Load file GeoJSON Ho Bao Linh
   // ==============================
   fetch('hobaolinh_geojson.geojson')
     .then(response => response.json())
     .then(data => {
-      var geojsonLayer = L.geoJSON(data, {
+      var hobaolinhLayer = L.geoJSON(data, {
         style: {
           color: 'blue',
           weight: 2
@@ -97,11 +97,11 @@
         }
       }).addTo(map);
 
-      // Fit bản đồ vào vùng dữ liệu
-      map.fitBounds(geojsonLayer.getBounds());
+      // Zoom tới vùng dữ liệu hobaolinh
+      map.fitBounds(hobaolinhLayer.getBounds());
     })
     .catch(error => {
-      console.error('Error loading the GeoJSON:', error);
+      console.error('Lỗi khi tải file GeoJSON:', error);
     });
 
 </script>
