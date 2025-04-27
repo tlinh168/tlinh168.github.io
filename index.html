@@ -79,31 +79,31 @@
   // THÊM PHẦN NÀY: Load file GeoJSON Ho Bao Linh
   // ==============================
   fetch('hobaolinh_geojson.geojson')
-    .then(response => response.json())
-    .then(data => {
-      var hobaolinhLayer = L.geoJSON(data, {
-        style: {
-          color: 'blue',
-          weight: 2
-        },
-        onEachFeature: function (feature, layer) {
-          if (feature.properties) {
-            let popupContent = "";
-            for (const key in feature.properties) {
-              popupContent += `<b>${key}</b>: ${feature.properties[key]}<br>`;
-            }
-            layer.bindPopup(popupContent);
+  .then(response => response.json())
+  .then(data => {
+    var hobaolinhLayer = L.geoJSON(data, {
+      style: {
+        color: 'red',
+        weight: 2,
+        fillOpacity: 0.5
+      },
+      onEachFeature: function (feature, layer) {
+        if (feature.properties) {
+          let popupContent = "";
+          for (const key in feature.properties) {
+            popupContent += `<b>${key}</b>: ${feature.properties[key]}<br>`;
           }
+          layer.bindPopup(popupContent);
         }
-      }).addTo(map);
+      }
+    }).addTo(map);
 
-      // Zoom tới vùng dữ liệu hobaolinh
-      map.fitBounds(hobaolinhLayer.getBounds());
-    })
-    .catch(error => {
-      console.error('Lỗi khi tải file GeoJSON:', error);
-    });
-
+    // Zoom tới vùng dữ liệu
+    map.fitBounds(hobaolinhLayer.getBounds());
+  })
+  .catch(error => {
+    console.error('Lỗi khi tải file GeoJSON:', error);
+  });
 </script>
 
 </body>
